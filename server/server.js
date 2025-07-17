@@ -15,13 +15,13 @@ import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import leadRoutes from './routes/leads.js';
 import projectRoutes from './routes/projects.js';
-import attendanceRoutes from './routes/attendance.js';
-import leaveRoutes from './routes/leaves.js';
-import invoiceRoutes from './routes/invoices.js';
 import noticeRoutes from './routes/notices.js';
 import meetingRoutes from './routes/meetings.js';
 import notificationRoutes from './routes/notifications.js';
 import dashboardRoutes from './routes/dashboard.js';
+import attendanceRoutes from './routes/attendance.js';
+import leaveRoutes from './routes/leaves.js';
+import invoiceRoutes from './routes/invoices.js';
 
 // Import middleware
 import { authenticateToken } from './middleware/auth.js';
@@ -89,13 +89,13 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', authenticateToken, userRoutes);
 app.use('/api/leads', authenticateToken, leadRoutes);
 app.use('/api/projects', authenticateToken, projectRoutes);
-app.use('/api/attendance', authenticateToken, attendanceRoutes);
-app.use('/api/leaves', authenticateToken, leaveRoutes);
-app.use('/api/invoices', authenticateToken, invoiceRoutes);
 app.use('/api/notices', authenticateToken, noticeRoutes);
 app.use('/api/meetings', authenticateToken, meetingRoutes);
 app.use('/api/notifications', authenticateToken, notificationRoutes);
 app.use('/api/dashboard', authenticateToken, dashboardRoutes);
+app.use('/api/attendance', authenticateToken, attendanceRoutes);
+app.use('/api/leaves', authenticateToken, leaveRoutes);
+app.use('/api/invoices', authenticateToken, invoiceRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
