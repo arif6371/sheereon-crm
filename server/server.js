@@ -7,6 +7,8 @@ import rateLimit from 'express-rate-limit';
 import morgan from 'morgan';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import { seedDatabase } from './utils/seedData.js';
+import { handleSocketConnection } from './socket/socketHandlers.js';
 
 // Import routes
 import authRoutes from './routes/auth.js';
@@ -62,24 +64,25 @@ if (process.env.NODE_ENV === 'development') {
 // Database connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/seereon_crm')
   .then(() => console.log('✅ Connected to MongoDB'))
+  .then(async () => {
+    // Seed database with sample data in development
+    if (process.env.NODE_ENV === 'development') {
+      try {
+        const seedResult = await seedDatabase();
+        console.log('📊 Sample data seeded:', seedResult);
+      } catch (error) {
+        console.log('⚠️ Database already contains data, skipping seed');
+      }
+    }
+  })
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// Socket.io connection handling
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
-  
-  socket.on('join_room', (userId) => {
-    socket.join(userId);
-    console.log(`User ${userId} joined room`);
-  });
-  
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
-  });
-});
+// Socket.io connection handling with authentication
+const socketHandlers = handleSocketConnection(io);
 
 // Make io available to routes
 app.set('io', io);
+app.set('socketHandlers', socketHandlers);
 
 // Routes
 app.use('/api/auth', authRoutes);

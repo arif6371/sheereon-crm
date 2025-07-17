@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar as CalendarIcon, Plus, Clock, Users, MapPin, Video } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotification } from '../../contexts/NotificationContext';
-
-const API_BASE_URL = 'http://localhost:5000';
+import { apiService } from '../../services/api';
 
 interface Event {
   id: string;
@@ -35,18 +34,18 @@ const Calendar: React.FC = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/meetings?date=${selectedDate.toISOString()}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+      const data = await apiService.getEvents({ 
+        date: selectedDate.toISOString().split('T')[0] 
       });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setEvents(data);
-      }
+      setEvents(data);
     } catch (error) {
       console.error('Error fetching events:', error);
+      addNotification({
+        type: 'error',
+        title: 'Failed to Load Events',
+        message: 'Unable to fetch calendar events. Please try again.',
+        priority: 'medium'
+      });
     } finally {
       setLoading(false);
     }
@@ -287,16 +286,8 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onSuccess 
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/meetings`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
+      await apiService.createEvent(formData);
+      
         addNotification({
           type: 'success',
           title: 'Event Scheduled',
@@ -304,7 +295,6 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onSuccess 
           priority: 'medium'
         });
         onSuccess();
-      }
     } catch (error) {
       console.error('Error creating event:', error);
       addNotification({

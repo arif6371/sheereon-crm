@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Bell, Pin, Calendar, AlertTriangle, Info, Plus, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotification } from '../../contexts/NotificationContext';
+import { apiService } from '../../services/api';
 
 interface Notice {
   id: string;
@@ -33,18 +34,16 @@ const NoticeBoard: React.FC = () => {
 
   const fetchNotices = async () => {
     try {
-      const response = await fetch('/api/notices', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setNotices(data);
-      }
+      const data = await apiService.getNotices();
+      setNotices(data);
     } catch (error) {
       console.error('Error fetching notices:', error);
+      addNotification({
+        type: 'error',
+        title: 'Failed to Load Notices',
+        message: 'Unable to fetch notices. Please try again.',
+        priority: 'medium'
+      });
     } finally {
       setLoading(false);
     }
@@ -52,12 +51,7 @@ const NoticeBoard: React.FC = () => {
 
   const markAsRead = async (noticeId: string) => {
     try {
-      await fetch(`/api/notices/${noticeId}/read`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      await apiService.markNoticeAsRead(noticeId);
       
       setNotices(prev => 
         prev.map(notice => 
@@ -245,16 +239,8 @@ const CreateNoticeModal: React.FC<CreateNoticeModalProps> = ({ onClose, onSucces
     setLoading(true);
 
     try {
-      const response = await fetch('/api/notices', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
+      await apiService.createNotice(formData);
+      
         addNotification({
           type: 'success',
           title: 'Notice Posted',
@@ -262,7 +248,6 @@ const CreateNoticeModal: React.FC<CreateNoticeModalProps> = ({ onClose, onSucces
           priority: 'medium'
         });
         onSuccess();
-      }
     } catch (error) {
       console.error('Error creating notice:', error);
       addNotification({

@@ -3,10 +3,13 @@ import { io, Socket } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 import { useNotification } from './NotificationContext';
 
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+
 interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
   onlineUsers: string[];
+  emit: (event: string, data?: any) => void;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -32,16 +35,16 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
   useEffect(() => {
     if (user) {
-      const newSocket = io('http://localhost:5001', {
+      const token = localStorage.getItem('token');
+      const newSocket = io(SOCKET_URL, {
         auth: {
-          userId: user.id
+          token: token
         }
       });
 
       newSocket.on('connect', () => {
         console.log('Connected to server');
         setIsConnected(true);
-        newSocket.emit('join_room', user.id);
       });
 
       newSocket.on('disconnect', () => {
@@ -49,7 +52,36 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         setIsConnected(false);
       });
 
+      newSocket.on('connect_error', (error) => {
+        console.error('Socket connection error:', error);
+        setIsConnected(false);
+      });
+
+      // Handle real-time notifications
+      newSocket.on('new_notice', (data) => {
+        addNotification(data.notification);
+      });
+
+      newSocket.on('new_event', (data) => {
+        addNotification(data.notification);
+      });
+
+      newSocket.on('project_created', (data) => {
+        addNotification(data.notification);
+      });
+
+      // Handle existing notification events
       newSocket.on('notification', (notification) => {
+        addNotification({
+          type: notification.type,
+          title: notification.title,
+          message: notification.message,
+          priority: notification.priority || 'medium',
+          actionUrl: notification.actionUrl
+        });
+      });
+
+      newSocket.on('system_notification', (notification) => {
         addNotification({
           type: notification.type,
           title: notification.title,
@@ -68,6 +100,16 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         console.log(`User ${userId} is now ${status}`);
       });
 
+      newSocket.on('lead_updated', (data) => {
+        // Handle lead updates in real-time
+        console.log('Lead updated:', data);
+      });
+
+      newSocket.on('project_updated', (data) => {
+        // Handle project updates in real-time
+        console.log('Project updated:', data);
+      });
+
       setSocket(newSocket);
 
       return () => {
@@ -76,10 +118,17 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     }
   }, [user, addNotification]);
 
+  const emit = (event: string, data?: any) => {
+    if (socket && isConnected) {
+      socket.emit(event, data);
+    }
+  };
+
   const value = {
     socket,
     isConnected,
-    onlineUsers
+    onlineUsers,
+    emit
   };
 
   return (
