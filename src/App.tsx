@@ -38,17 +38,17 @@ function AppContent() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/presales" element={
-          <ProtectedRoute allowedRoles={['Admin', 'BDE', 'DM']}>
+          <ProtectedRoute allowedRoles={['Admin', 'PCF']}>
             <PreSales />
           </ProtectedRoute>
         } />
         <Route path="/sales" element={
-          <ProtectedRoute allowedRoles={['Admin', 'BDE', 'DM']}>
+          <ProtectedRoute allowedRoles={['Admin', 'SALES']}>
             <SalesManagement />
           </ProtectedRoute>
         } />
         <Route path="/projects" element={
-          <ProtectedRoute allowedRoles={['Admin', 'PCF', 'DEV', 'DM']}>
+          <ProtectedRoute allowedRoles={['Admin', 'DEV', 'DM']}>
             <ProjectManagement />
           </ProtectedRoute>
         } />

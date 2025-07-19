@@ -23,19 +23,20 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBack }) => {
   const { addNotification } = useNotification();
 
   const roles = [
-    { value: 'BDE', label: 'Business Development Executive' },
+    { value: 'PCF', label: 'Pre-Sales Coordinator' },
+    { value: 'SALES', label: 'Sales Executive' },
     { value: 'DEV', label: 'Developer' },
+    { value: 'DM', label: 'Development Manager' },
     { value: 'HR', label: 'Human Resources' },
     { value: 'Accounts', label: 'Accounts' },
-    { value: 'DM', label: 'Development Manager' },
-    { value: 'PCF', label: 'Project Coordinator' }
   ];
 
   const departments = [
+    'Pre-Sales',
     'Sales',
     'Development',
     'Human Resources',
-    'Accounts',
+    'Finance',
     'Management',
     'Operations'
   ];

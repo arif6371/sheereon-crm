@@ -4,6 +4,7 @@ import { useNotification } from '../../contexts/NotificationContext';
 import { useAuth } from '../../contexts/AuthContext';
 import LeadDetailsModal from './LeadDetailsModal';
 import AssignLeadModal from './AssignLeadModal';
+import DuplicateLeadDetection from './DuplicateLeadDetection';
 
 interface Lead {
   id: string;
@@ -35,6 +36,7 @@ interface Lead {
 const PreSales: React.FC = () => {
   const { addNotification } = useNotification();
   const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState('leads');
   const [leads, setLeads] = useState<Lead[]>([
     {
       id: '1',
@@ -175,9 +177,9 @@ const PreSales: React.FC = () => {
     const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
     const matchesPriority = priorityFilter === 'all' || lead.priority === priorityFilter;
     
-    // Role-based filtering
-    if (user?.role === 'BDE') {
-      return matchesSearch && matchesStatus && matchesPriority && lead.assignedTo === user.email;
+    // PCF can see all leads they created and unassigned leads
+    if (user?.role === 'PCF') {
+      return matchesSearch && matchesStatus && matchesPriority;
     }
     
     return matchesSearch && matchesStatus && matchesPriority;
@@ -268,8 +270,8 @@ const PreSales: React.FC = () => {
   };
 
   const canEditLead = (lead: Lead) => {
-    if (user?.role === 'Admin' || user?.role === 'PCF') return true;
-    if (user?.role === 'BDE' && lead.assignedTo === user.email && lead.status !== 'paid') return true;
+    if (user?.role === 'Admin') return true;
+    if (user?.role === 'PCF' && !lead.assignedTo) return true; // PCF can only edit unassigned leads
     return false;
   };
 
@@ -289,16 +291,16 @@ const PreSales: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">PreSales Management</h1>
-          <p className="text-gray-600 mt-1">Manage leads and track sales pipeline</p>
+          <p className="text-gray-600 mt-1">Create and manage leads for sales team assignment</p>
         </div>
         <div className="flex space-x-2">
-          {(user?.role === 'Admin' || user?.role === 'PCF') && (
+          {user?.role === 'Admin' && (
             <button
               onClick={() => setShowAssignModal(true)}
               className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-green-700 transition-colors"
             >
               <User className="h-4 w-4" />
-              <span>Assign Lead</span>
+              <span>Assign to Sales</span>
             </button>
           )}
           <button
@@ -311,6 +313,29 @@ const PreSales: React.FC = () => {
         </div>
       </div>
 
+      {/* Tab Navigation */}
+      <div className="flex space-x-2">
+        <button
+          onClick={() => setActiveTab('leads')}
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            activeTab === 'leads'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          All Leads
+        </button>
+        <button
+          onClick={() => setActiveTab('duplicates')}
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            activeTab === 'duplicates'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          Duplicate Detection
+        </button>
+      </div>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -361,172 +386,164 @@ const PreSales: React.FC = () => {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white p-6 rounded-lg shadow-sm">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search leads..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
+      {/* Tab Content */}
+      {activeTab === 'leads' && (
+        <>
+          {/* Filters */}
+          <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search leads..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Filter className="h-4 w-4 text-gray-400" />
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="all">All Status</option>
+                  <option value="new">New</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="qualified">Qualified</option>
+                  <option value="proposal">Proposal</option>
+                  <option value="negotiation">Negotiation</option>
+                  <option value="paid">Paid</option>
+                  <option value="pending">Pending</option>
+                </select>
+                <select
+                  value={priorityFilter}
+                  onChange={(e) => setPriorityFilter(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="all">All Priority</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <Filter className="h-4 w-4 text-gray-400" />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="all">All Status</option>
-              <option value="new">New</option>
-              <option value="contacted">Contacted</option>
-              <option value="qualified">Qualified</option>
-              <option value="proposal">Proposal</option>
-              <option value="negotiation">Negotiation</option>
-              <option value="paid">Paid</option>
-              <option value="pending">Pending</option>
-            </select>
-            <select
-              value={priorityFilter}
-              onChange={(e) => setPriorityFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="all">All Priority</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-            </select>
-          </div>
-        </div>
-      </div>
 
-      {/* Leads Table */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Company
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Contact
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Priority
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Value
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Assigned To
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Last Activity
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredLeads.map((lead) => (
-                <tr key={lead.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{lead.company}</div>
-                    <div className="text-sm text-gray-500">{lead.industry}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{lead.contact}</div>
-                    <div className="text-sm text-gray-500">{lead.email}</div>
-                    <div className="text-sm text-gray-500">{lead.phone}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      {canEditLead(lead) ? (
-                        <select
-                          value={lead.status}
-                          onChange={(e) => handleStatusChange(lead.id, e.target.value)}
-                          className={`px-2 py-1 text-xs font-medium rounded-full border-0 ${getStatusColor(lead.status)}`}
-                        >
-                          <option value="new">New</option>
-                          <option value="contacted">Contacted</option>
-                          <option value="qualified">Qualified</option>
-                          <option value="proposal">Proposal</option>
-                          <option value="negotiation">Negotiation</option>
-                          <option value="paid">Paid</option>
-                          <option value="pending">Pending</option>
-                        </select>
-                      ) : (
+          {/* Leads Table */}
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Company
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Contact
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Priority
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Value
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Assignment Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Created Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredLeads.map((lead) => (
+                    <tr key={lead.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{lead.company}</div>
+                        <div className="text-sm text-gray-500">{lead.industry}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{lead.contact}</div>
+                        <div className="text-sm text-gray-500">{lead.email}</div>
+                        <div className="text-sm text-gray-500">{lead.phone}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full flex items-center space-x-1 ${getStatusColor(lead.status)}`}>
                           {getStatusIcon(lead.status)}
                           <span>{lead.status}</span>
                         </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`text-sm font-medium ${getPriorityColor(lead.priority)}`}>
-                      {lead.priority.toUpperCase()}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {lead.value}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {lead.assignedTo ? (
-                      <div>
-                        <div className="font-medium">{lead.assignedTo}</div>
-                        <div className="text-xs text-gray-500">
-                          Assigned: {lead.assignedDate}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`text-sm font-medium ${getPriorityColor(lead.priority)}`}>
+                          {lead.priority.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {lead.value}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {lead.assignedTo ? (
+                          <div>
+                            <div className="font-medium text-green-600">Assigned to Sales</div>
+                            <div className="text-xs text-gray-500">
+                              {lead.assignedDate}
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">
+                            Awaiting Assignment
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {lead.date}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex space-x-2">
+                          <button 
+                            onClick={() => {
+                              setSelectedLead(lead);
+                              setShowDetailsModal(true);
+                            }}
+                            className="text-blue-600 hover:text-blue-900"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button>
+                          {canEditLead(lead) && (
+                            <>
+                              <button className="text-green-600 hover:text-green-900">
+                                <Edit className="h-4 w-4" />
+                              </button>
+                              <button className="text-red-600 hover:text-red-900">
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </>
+                          )}
                         </div>
-                      </div>
-                    ) : (
-                      <span className="text-gray-400">Unassigned</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {lead.lastActivity}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-2">
-                      <button 
-                        onClick={() => {
-                          setSelectedLead(lead);
-                          setShowDetailsModal(true);
-                        }}
-                        className="text-blue-600 hover:text-blue-900"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      {canEditLead(lead) && (
-                        <>
-                          <button className="text-green-600 hover:text-green-900">
-                            <Edit className="h-4 w-4" />
-                          </button>
-                          <button className="text-red-600 hover:text-red-900">
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
 
+      {activeTab === 'duplicates' && (
+        <DuplicateLeadDetection />
+      )}
       {/* Add Lead Modal */}
       {showAddForm && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">

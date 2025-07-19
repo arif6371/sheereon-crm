@@ -48,8 +48,11 @@ const Login: React.FC = () => {
   const demoAccounts = [
     { email: 'admin@seereon.com', role: 'Admin', userId: 'AD-25-001' },
     { email: 'hr@seereon.com', role: 'HR', userId: 'HR-25-002' },
-    { email: 'bde@seereon.com', role: 'BDE', userId: 'BD-25-003' },
-    { email: 'dev@seereon.com', role: 'DEV', userId: 'DV-25-004' }
+    { email: 'pcf@seereon.com', role: 'PCF', userId: 'PCF-25-003' },
+    { email: 'sales@seereon.com', role: 'SALES', userId: 'SL-25-004' },
+    { email: 'dev@seereon.com', role: 'DEV', userId: 'DV-25-005' },
+    { email: 'dm@seereon.com', role: 'DM', userId: 'DM-25-006' },
+    { email: 'accounts@seereon.com', role: 'Accounts', userId: 'AC-25-007' }
   ];
 
   if (showRegister) {

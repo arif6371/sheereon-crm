@@ -2,7 +2,8 @@ import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import AdminDashboard from './AdminDashboard';
 import HRDashboard from './HRDashboard';
-import BDEDashboard from './BDEDashboard';
+import PCFDashboard from './PCFDashboard';
+import SalesDashboard from './SalesDashboard';
 import DevDashboard from './DevDashboard';
 import AccountsDashboard from './AccountsDashboard';
 
@@ -15,11 +16,12 @@ const Dashboard: React.FC = () => {
         return <AdminDashboard />;
       case 'HR':
         return <HRDashboard />;
-      case 'BDE':
-      case 'DM':
-        return <BDEDashboard />;
-      case 'DEV':
       case 'PCF':
+        return <PCFDashboard />;
+      case 'SALES':
+        return <SalesDashboard />;
+      case 'DEV':
+      case 'DM':
         return <DevDashboard />;
       case 'Accounts':
         return <AccountsDashboard />;

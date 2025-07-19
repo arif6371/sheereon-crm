@@ -44,12 +44,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         { name: 'Accounts', href: '/accounts', icon: Calculator },
         { name: 'User Management', href: '/admin/users', icon: Settings }
       );
-    } else if (user?.role === 'BDE' || user?.role === 'DM') {
+    } else if (user?.role === 'PCF') {
       roleBasedItems.push(
-        { name: 'PreSales', href: '/presales', icon: TrendingUp },
+        { name: 'PreSales', href: '/presales', icon: TrendingUp }
+      );
+    } else if (user?.role === 'SALES') {
+      roleBasedItems.push(
         { name: 'Sales', href: '/sales', icon: TrendingUp }
       );
-    } else if (user?.role === 'PCF' || user?.role === 'DEV') {
+    } else if (user?.role === 'DEV' || user?.role === 'DM') {
       roleBasedItems.push(
         { name: 'Projects', href: '/projects', icon: FolderOpen }
       );

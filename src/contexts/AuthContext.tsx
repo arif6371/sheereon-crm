@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export type UserRole = 'Admin' | 'HR' | 'PCF' | 'BDE' | 'DEV' | 'DM' | 'Accounts';
+export type UserRole = 'Admin' | 'HR' | 'PCF' | 'SALES' | 'DEV' | 'DM' | 'Accounts';
 
 export interface User {
   id: string;
@@ -92,12 +92,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       isEmailVerified: true,
       onlineStatus: 'online'
     },
-    'bde@seereon.com': {
+    'pcf@seereon.com': {
       id: '3',
-      userId: 'BD-25-003',
-      name: 'Business Development',
-      email: 'bde@seereon.com',
-      role: 'BDE',
+      userId: 'PCF-25-003',
+      name: 'Pre-Sales Coordinator',
+      email: 'pcf@seereon.com',
+      role: 'PCF',
+      department: 'Pre-Sales',
+      joinDate: '2022-01-10',
+      status: 'active',
+      isEmailVerified: true,
+      onlineStatus: 'online'
+    },
+    'sales@seereon.com': {
+      id: '4',
+      userId: 'SL-25-004',
+      name: 'Sales Executive',
+      email: 'sales@seereon.com',
+      role: 'SALES',
       department: 'Sales',
       joinDate: '2022-01-10',
       status: 'active',
@@ -105,13 +117,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       onlineStatus: 'online'
     },
     'dev@seereon.com': {
-      id: '4',
-      userId: 'DV-25-004',
+      id: '5',
+      userId: 'DV-25-005',
       name: 'Developer',
       email: 'dev@seereon.com',
       role: 'DEV',
       department: 'Development',
       joinDate: '2023-05-20',
+      status: 'active',
+      isEmailVerified: true,
+      onlineStatus: 'online'
+    },
+    'dm@seereon.com': {
+      id: '6',
+      userId: 'DM-25-006',
+      name: 'Development Manager',
+      email: 'dm@seereon.com',
+      role: 'DM',
+      department: 'Development',
+      joinDate: '2021-08-15',
+      status: 'active',
+      isEmailVerified: true,
+      onlineStatus: 'online'
+    },
+    'accounts@seereon.com': {
+      id: '7',
+      userId: 'AC-25-007',
+      name: 'Accounts Manager',
+      email: 'accounts@seereon.com',
+      role: 'Accounts',
+      department: 'Finance',
+      joinDate: '2022-03-20',
       status: 'active',
       isEmailVerified: true,
       onlineStatus: 'online'
@@ -172,11 +208,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     // Mock Google user data
     const googleUser = {
-      id: '5',
-      userId: 'GU-25-005',
+      id: '8',
+      userId: 'GU-25-008',
       name: 'Google User',
       email: 'google.user@gmail.com',
-      role: 'BDE' as UserRole,
+      role: 'SALES' as UserRole,
       department: 'Sales',
       joinDate: new Date().toISOString().split('T')[0],
       status: 'pending' as const,

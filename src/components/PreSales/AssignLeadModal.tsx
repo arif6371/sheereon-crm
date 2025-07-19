@@ -22,10 +22,10 @@ const AssignLeadModal: React.FC<AssignLeadModalProps> = ({ leads, onClose, onAss
   const [assignTo, setAssignTo] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const bdeUsers = [
-    'bde@seereon.com',
-    'bde2@seereon.com',
-    'bde3@seereon.com'
+  const salesUsers = [
+    'sales@seereon.com',
+    'sales2@seereon.com',
+    'sales3@seereon.com'
   ];
 
   const filteredLeads = leads.filter(lead =>
@@ -114,7 +114,7 @@ const AssignLeadModal: React.FC<AssignLeadModalProps> = ({ leads, onClose, onAss
           <div>
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-lg font-medium text-gray-900">
-                Unassigned Leads ({filteredLeads.length})
+                Leads Ready for Assignment ({filteredLeads.length})
               </h4>
               <div className="text-sm text-gray-600">
                 Selected: {selectedLeads.length}
@@ -123,7 +123,7 @@ const AssignLeadModal: React.FC<AssignLeadModalProps> = ({ leads, onClose, onAss
 
             {filteredLeads.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                No unassigned leads found
+                No leads ready for assignment
               </div>
             ) : (
               <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -148,15 +148,15 @@ const AssignLeadModal: React.FC<AssignLeadModalProps> = ({ leads, onClose, onAss
                         <div>
                           <div className="font-medium text-gray-900">{lead.company}</div>
                           <div className="text-sm text-gray-500">{lead.contact} • {lead.email}</div>
-                        </div>
+                Assign To Sales Team
                       </div>
                       <div className="text-right">
                         <div className="font-medium text-gray-900">{lead.value}</div>
                         <div className={`text-sm font-medium ${getPriorityColor(lead.priority)}`}>
                           {lead.priority.toUpperCase()}
                         </div>
-                      </div>
-                    </div>
+                <option value="">Select Sales Executive</option>
+                {salesUsers.map(user => (
                   </div>
                 ))}
               </div>
@@ -176,7 +176,7 @@ const AssignLeadModal: React.FC<AssignLeadModalProps> = ({ leads, onClose, onAss
               disabled={selectedLeads.length === 0 || !assignTo}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              Assign {selectedLeads.length} Lead{selectedLeads.length !== 1 ? 's' : ''}
+              Assign {selectedLeads.length} Lead{selectedLeads.length !== 1 ? 's' : ''} to Sales
             </button>
           </div>
         </div>
