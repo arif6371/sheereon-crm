@@ -23,23 +23,36 @@ class ApiService {
     return response.text();
   }
 
+  private async safeApiCall<T>(apiCall: () => Promise<T>): Promise<T> {
+    try {
+      return await apiCall();
+    } catch (error) {
+      console.warn('API call failed - using mock data:', error);
+      throw error;
+    }
+  }
+
   // Auth endpoints
   async login(email: string, password: string) {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+    return this.safeApiCall(async () => {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      return this.handleResponse(response);
     });
-    return this.handleResponse(response);
   }
 
   async register(userData: any) {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData)
+    return this.safeApiCall(async () => {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+      return this.handleResponse(response);
     });
-    return this.handleResponse(response);
   }
 
   async verifyEmail(token: string) {

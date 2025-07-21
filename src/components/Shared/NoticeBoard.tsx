@@ -34,16 +34,26 @@ const NoticeBoard: React.FC = () => {
 
   const fetchNotices = async () => {
     try {
-      const data = await apiService.getNotices();
-      setNotices(data);
+      // Mock data until backend is ready
+      const mockNotices: Notice[] = [
+        {
+          id: '1',
+          title: 'Welcome to Seereon CRM System',
+          content: 'We are excited to announce the launch of our new CRM system. This platform will help streamline our operations and improve collaboration across all departments.',
+          type: 'announcement',
+          priority: 'high',
+          targetAudience: 'all',
+          postedBy: { name: 'Admin User', role: 'Admin' },
+          isActive: true,
+          createdAt: new Date().toISOString(),
+          readBy: []
+        }
+      ];
+      setNotices(mockNotices);
     } catch (error) {
       console.error('Error fetching notices:', error);
-      addNotification({
-        type: 'error',
-        title: 'Failed to Load Notices',
-        message: 'Unable to fetch notices. Please try again.',
-        priority: 'medium'
-      });
+      // Use empty array as fallback
+      setNotices([]);
     } finally {
       setLoading(false);
     }

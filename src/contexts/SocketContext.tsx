@@ -34,7 +34,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const { addNotification } = useNotification();
 
   useEffect(() => {
-    if (user) {
+    // Temporarily disable socket connection until backend is ready
+    if (false && user) {
       const token = localStorage.getItem('token');
       const newSocket = io(SOCKET_URL, {
         auth: {
@@ -53,7 +54,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       });
 
       newSocket.on('connect_error', (error) => {
-        console.error('Socket connection error:', error);
+        console.log('Socket connection disabled - backend not ready');
         setIsConnected(false);
       });
 
