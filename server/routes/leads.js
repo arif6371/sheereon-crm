@@ -222,7 +222,7 @@ router.put('/:id/status', authenticateToken, async (req, res) => {
     }
 
     // Check permissions
-    if (req.user.role === 'SALES' && lead.assignedTo?.toString() !== req.user._id.toString()) {
+    if (req.user.role === 'BDE' && lead.assignedTo?.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'You can only update leads assigned to you' });
     }
 
@@ -318,7 +318,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     }
 
     // Check permissions
-    if (req.user.role === 'SALES' && lead.assignedTo?.toString() !== req.user._id.toString()) {
+    if (req.user.role === 'BDE' && lead.assignedTo?.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'You can only update leads assigned to you' });
     }
 
@@ -367,7 +367,7 @@ router.post('/:id/notes', authenticateToken, async (req, res) => {
     }
 
     // Check permissions
-    if (req.user.role === 'SALES' && lead.assignedTo?.toString() !== req.user._id.toString()) {
+    if (req.user.role === 'BDE' && lead.assignedTo?.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'You can only add notes to leads assigned to you' });
     }
 
@@ -398,7 +398,7 @@ router.get('/stats', authenticateToken, async (req, res) => {
     let matchQuery = {};
     
     // Role-based filtering
-    if (req.user.role === 'BDE') {
+    if (req.user.role === 'SALES') {
       matchQuery.assignedTo = req.user._id;
     }
 
