@@ -45,6 +45,6 @@ export const requireRole = (roles) => {
 
 export const requireAdmin = requireRole(['Admin']);
 export const requireHR = requireRole(['Admin', 'HR']);
-export const requireSales = requireRole(['Admin', 'BDE', 'DM', 'PCF']);
+export const requireSales = requireRole(['Admin', 'SALES', 'DM', 'PCF']);
 export const requireDev = requireRole(['Admin', 'DEV', 'DM', 'PCF']);
 export const requireAccounts = requireRole(['Admin', 'Accounts']);

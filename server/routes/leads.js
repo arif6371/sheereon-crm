@@ -14,7 +14,7 @@ router.get('/', authenticateToken, async (req, res) => {
     let query = {};
     
     // Role-based filtering
-    if (req.user.role === 'BDE') {
+    if (req.user.role === 'SALES') {
       query.assignedTo = req.user._id;
     }
     

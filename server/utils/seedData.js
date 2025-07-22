@@ -11,15 +11,12 @@ export const seedDatabase = async () => {
   try {
     console.log('🌱 Seeding database with sample data...');
 
-    // Clear existing data
-    await Promise.all([
-      User.deleteMany({}),
-      Lead.deleteMany({}),
-      Project.deleteMany({}),
-      Notice.deleteMany({}),
-      Meeting.deleteMany({}),
-      Invoice.deleteMany({})
-    ]);
+    // Check if data already exists
+    const existingUsers = await User.countDocuments();
+    if (existingUsers > 0) {
+      console.log('📊 Database already contains data, skipping seed');
+      return { message: 'Data already exists' };
+    }
 
     // Create sample users
     const hashedPassword = await bcrypt.hash('password123', 12);
@@ -34,7 +31,8 @@ export const seedDatabase = async () => {
         department: 'Management',
         status: 'active',
         isEmailVerified: true,
-        joinDate: new Date('2020-01-01')
+        joinDate: new Date('2020-01-01'),
+        onlineStatus: 'offline'
       },
       {
         userId: 'HR-25-002',
@@ -45,21 +43,35 @@ export const seedDatabase = async () => {
         department: 'Human Resources',
         status: 'active',
         isEmailVerified: true,
-        joinDate: new Date('2021-03-15')
+        joinDate: new Date('2021-03-15'),
+        onlineStatus: 'offline'
       },
       {
-        userId: 'BD-25-003',
-        name: 'Business Development Executive',
-        email: 'bde@seereon.com',
+        userId: 'PCF-25-003',
+        name: 'Pre-Sales Coordinator',
+        email: 'pcf@seereon.com',
         password: hashedPassword,
-        role: 'BDE',
+        role: 'PCF',
+        department: 'Pre-Sales',
+        status: 'active',
+        isEmailVerified: true,
+        joinDate: new Date('2022-01-10'),
+        onlineStatus: 'offline'
+      },
+      {
+        userId: 'SL-25-004',
+        name: 'Sales Executive',
+        email: 'sales@seereon.com',
+        password: hashedPassword,
+        role: 'SALES',
         department: 'Sales',
         status: 'active',
         isEmailVerified: true,
-        joinDate: new Date('2022-01-10')
+        joinDate: new Date('2022-06-15'),
+        onlineStatus: 'offline'
       },
       {
-        userId: 'DV-25-004',
+        userId: 'DV-25-005',
         name: 'Senior Developer',
         email: 'dev@seereon.com',
         password: hashedPassword,
@@ -67,10 +79,23 @@ export const seedDatabase = async () => {
         department: 'Development',
         status: 'active',
         isEmailVerified: true,
-        joinDate: new Date('2023-05-20')
+        joinDate: new Date('2023-05-20'),
+        onlineStatus: 'offline'
       },
       {
-        userId: 'AC-25-005',
+        userId: 'DM-25-006',
+        name: 'Development Manager',
+        email: 'dm@seereon.com',
+        password: hashedPassword,
+        role: 'DM',
+        department: 'Development',
+        status: 'active',
+        isEmailVerified: true,
+        joinDate: new Date('2021-08-15'),
+        onlineStatus: 'offline'
+      },
+      {
+        userId: 'AC-25-007',
         name: 'Accounts Manager',
         email: 'accounts@seereon.com',
         password: hashedPassword,
@@ -78,7 +103,8 @@ export const seedDatabase = async () => {
         department: 'Finance',
         status: 'active',
         isEmailVerified: true,
-        joinDate: new Date('2022-08-15')
+        joinDate: new Date('2022-08-15'),
+        onlineStatus: 'offline'
       }
     ]);
 
@@ -102,13 +128,13 @@ export const seedDatabase = async () => {
         interestedPlatforms: ['Web Development', 'Mobile App'],
         slaAgreed: true,
         ndaSigned: true,
-        assignedTo: users[2]._id, // BDE
+        assignedTo: users[3]._id, // Sales
         assignedBy: users[0]._id, // Admin
         assignedDate: new Date(),
         projectNotes: [
           {
             note: 'Initial discussion completed, client interested in full-stack solution',
-            addedBy: users[2]._id,
+            addedBy: users[3]._id,
             addedAt: new Date()
           }
         ]
@@ -128,13 +154,13 @@ export const seedDatabase = async () => {
         interestedPlatforms: ['ERP System', 'Data Analytics'],
         slaAgreed: false,
         ndaSigned: true,
-        assignedTo: users[2]._id,
+        assignedTo: users[3]._id,
         assignedBy: users[0]._id,
         assignedDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
         projectNotes: [
           {
             note: 'Proposal sent, awaiting client feedback',
-            addedBy: users[2]._id,
+            addedBy: users[3]._id,
             addedAt: new Date()
           }
         ]
@@ -192,18 +218,18 @@ export const seedDatabase = async () => {
         },
         assignedTeam: [
           {
-            user: users[3]._id,
+            user: users[4]._id,
             role: 'Lead Developer',
             assignedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000)
           }
         ],
-        projectManager: users[3]._id,
+        projectManager: users[4]._id,
         technologies: ['React', 'Node.js', 'MongoDB', 'Stripe'],
         tasks: [
           {
             title: 'User Authentication System',
             description: 'Implement JWT-based authentication',
-            assignedTo: users[3]._id,
+            assignedTo: users[4]._id,
             status: 'completed',
             priority: 'high',
             estimatedHours: 40,
@@ -213,7 +239,7 @@ export const seedDatabase = async () => {
           {
             title: 'Product Catalog Management',
             description: 'Build product CRUD operations',
-            assignedTo: users[3]._id,
+            assignedTo: users[4]._id,
             status: 'in-progress',
             priority: 'high',
             estimatedHours: 60,
@@ -245,12 +271,12 @@ export const seedDatabase = async () => {
         },
         assignedTeam: [
           {
-            user: users[3]._id,
+            user: users[4]._id,
             role: 'Project Manager',
             assignedAt: new Date()
           }
         ],
-        projectManager: users[3]._id,
+        projectManager: users[4]._id,
         technologies: ['React Native', 'Node.js', 'PostgreSQL', 'AWS']
       }
     ]);
@@ -300,9 +326,9 @@ export const seedDatabase = async () => {
         startTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
         endTime: new Date(Date.now() + 24 * 60 * 60 * 1000 + 60 * 60 * 1000), // Tomorrow + 1 hour
         location: 'office',
-        organizer: users[3]._id,
+        organizer: users[4]._id,
         attendees: [
-          { user: users[3]._id, status: 'accepted' }
+          { user: users[4]._id, status: 'accepted' }
         ],
         status: 'scheduled'
       },
@@ -314,9 +340,9 @@ export const seedDatabase = async () => {
         endTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000), // 3 days + 2 hours
         location: 'online',
         meetingLink: 'https://meet.google.com/abc-defg-hij',
-        organizer: users[2]._id,
+        organizer: users[3]._id,
         attendees: [
-          { user: users[2]._id, status: 'accepted' },
+          { user: users[3]._id, status: 'accepted' },
           { user: users[0]._id, status: 'invited' }
         ],
         status: 'scheduled'
@@ -357,7 +383,7 @@ export const seedDatabase = async () => {
         paidDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
         paymentMethod: 'bank_transfer',
         paymentReference: 'TXN123456789',
-        createdBy: users[4]._id
+        createdBy: users[6]._id
       }
     ]);
 

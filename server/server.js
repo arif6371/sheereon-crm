@@ -2,8 +2,6 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
 import morgan from 'morgan';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -38,19 +36,10 @@ const io = new Server(server, {
   }
 });
 
-// Security middleware
-app.use(helmet());
 app.use(cors({
   origin: process.env.FRONTEND_URL || "http://localhost:5173",
   credentials: true
 }));
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
-});
-app.use(limiter);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -62,17 +51,15 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/seereon_crm')
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ Connected to MongoDB'))
   .then(async () => {
     // Seed database with sample data in development
-    if (process.env.NODE_ENV === 'development') {
-      try {
-        const seedResult = await seedDatabase();
-        console.log('📊 Sample data seeded:', seedResult);
-      } catch (error) {
-        console.log('⚠️ Database already contains data, skipping seed');
-      }
+    try {
+      const seedResult = await seedDatabase();
+      console.log('📊 Sample data seeded:', seedResult);
+    } catch (error) {
+      console.log('⚠️ Database already contains data, skipping seed');
     }
   })
   .catch(err => console.error('❌ MongoDB connection error:', err));
