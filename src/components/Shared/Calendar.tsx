@@ -307,6 +307,9 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onSuccess 
         status: 'scheduled'
       };
       
+      // Add event to the events list
+      setEvents(prev => [...prev, newEvent]);
+      
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 500));
       

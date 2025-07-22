@@ -20,6 +20,7 @@ interface NotificationContextType {
   clearNotifications: () => void;
   unreadCount: number;
   getNotificationsByType: (type: string) => Notification[];
+  broadcastNoticeNotification: (notice: { title: string; priority: string }) => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -79,7 +80,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     }
   ]);
 
-  // Simulate real-time notifications
+  // Simulate real-time notifications and notice broadcasts
   useEffect(() => {
     const interval = setInterval(() => {
       // Randomly add new notifications for demo
@@ -102,6 +103,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
             title: 'System Update',
             message: 'System maintenance scheduled for tonight',
             priority: 'low' as const
+          },
+          {
+            type: 'info' as const,
+            title: 'New Notice Posted',
+            message: 'A new company notice has been posted',
+            priority: 'medium' as const,
+            actionUrl: '/notices'
           }
         ];
         
@@ -113,6 +121,16 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     return () => clearInterval(interval);
   }, []);
 
+  // Function to broadcast notice notifications to all users
+  const broadcastNoticeNotification = (notice: { title: string; priority: string }) => {
+    addNotification({
+      type: 'info',
+      title: 'New Notice Posted',
+      message: `${notice.title}`,
+      priority: notice.priority as any,
+      actionUrl: '/notices'
+    });
+  };
   const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
     const newNotification: Notification = {
       ...notification,
@@ -154,7 +172,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     markAllAsRead,
     clearNotifications,
     unreadCount,
-    getNotificationsByType
+    getNotificationsByType,
+    broadcastNoticeNotification
   };
 
   return (

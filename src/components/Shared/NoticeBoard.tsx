@@ -242,22 +242,47 @@ const CreateNoticeModal: React.FC<CreateNoticeModalProps> = ({ onClose, onSucces
     expiryDate: ''
   });
   const [loading, setLoading] = useState(false);
-  const { addNotification } = useNotification();
+  const { addNotification, broadcastNoticeNotification } = useNotification();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      await apiService.createNotice(formData);
+      // Mock notice creation since backend is not ready
+      const newNotice: Notice = {
+        id: Date.now().toString(),
+        title: formData.title,
+        content: formData.content,
+        type: formData.type as any,
+        priority: formData.priority as any,
+        targetAudience: formData.targetAudience,
+        postedBy: { name: 'Current User', role: 'Admin' },
+        isActive: true,
+        expiryDate: formData.expiryDate,
+        createdAt: new Date().toISOString(),
+        readBy: []
+      };
       
-        addNotification({
-          type: 'success',
-          title: 'Notice Posted',
-          message: 'Your notice has been posted successfully.',
-          priority: 'medium'
-        });
-        onSuccess();
+      // Add to notices list
+      setNotices(prev => [newNotice, ...prev]);
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Broadcast notification to all users about the new notice
+      broadcastNoticeNotification({
+        title: formData.title,
+        priority: formData.priority
+      });
+      
+      addNotification({
+        type: 'success',
+        title: 'Notice Posted',
+        message: 'Your notice has been posted successfully.',
+        priority: 'medium'
+      });
+      onSuccess();
     } catch (error) {
       console.error('Error creating notice:', error);
       addNotification({
