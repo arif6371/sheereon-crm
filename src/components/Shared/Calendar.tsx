@@ -308,13 +308,17 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onSuccess 
       };
       
       // Add event to the events list
-      setEvents(prev => [...prev, newEvent]);
+      // setEvents(prev => [...prev, newEvent]);
       
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 500));
       
       addNotification({
         type: 'success',
+        title: 'Event Scheduled',
+        message: 'Event has been successfully scheduled.',
+        priority: 'medium'
+      });
       onSuccess();
     } catch (error) {
       console.error('Error creating event:', error);
