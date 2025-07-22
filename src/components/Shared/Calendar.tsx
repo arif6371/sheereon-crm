@@ -315,10 +315,6 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ onClose, onSuccess 
       
       addNotification({
         type: 'success',
-        title: 'Event Scheduled',
-        message: 'Your event has been scheduled successfully.',
-        priority: 'medium'
-      });
       onSuccess();
     } catch (error) {
       console.error('Error creating event:', error);
