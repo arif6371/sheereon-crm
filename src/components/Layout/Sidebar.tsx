@@ -37,11 +37,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
     if (user?.role === 'Admin') {
       roleBasedItems.push(
-        { name: 'PreSales', href: '/presales', icon: TrendingUp },
-        { name: 'Sales', href: '/sales', icon: TrendingUp },
-        { name: 'Projects', href: '/projects', icon: FolderOpen },
-        { name: 'HRMS', href: '/hrms', icon: UserCheck },
-        { name: 'Accounts', href: '/accounts', icon: Calculator },
         { name: 'User Management', href: '/admin/users', icon: Settings }
       );
     } else if (user?.role === 'PCF') {
