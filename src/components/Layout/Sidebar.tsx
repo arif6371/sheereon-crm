@@ -37,7 +37,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
     if (user?.role === 'Admin') {
       roleBasedItems.push(
-        { name: 'User Management', href: '/admin/users', icon: Settings }
+        { name: 'User Management', href: '/admin/users', icon: Settings },
+        { name: 'Sales Management', href: '/sales', icon: TrendingUp },
+        { name: 'Project Management', href: '/projects', icon: FolderOpen },
+        { name: 'HR Management', href: '/hrms', icon: UserCheck },
+        { name: 'Accounts', href: '/accounts', icon: Calculator }
       );
     } else if (user?.role === 'PCF') {
       roleBasedItems.push(
@@ -53,7 +57,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       );
     } else if (user?.role === 'HR') {
       roleBasedItems.push(
-        { name: 'HRMS', href: '/hrms', icon: UserCheck }
+        { name: 'HR Management', href: '/hrms', icon: UserCheck },
+        { name: 'All Employees', href: '/admin/users', icon: Users }
       );
     } else if (user?.role === 'Accounts') {
       roleBasedItems.push(

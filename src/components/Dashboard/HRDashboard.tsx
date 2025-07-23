@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Calendar, Clock, UserCheck } from 'lucide-react';
+import { Users, Calendar, Clock, UserCheck, AlertTriangle, Activity, TrendingUp, FileText } from 'lucide-react';
 import StatsCard from './StatsCard';
 
 const HRDashboard: React.FC = () => {
@@ -12,25 +12,25 @@ const HRDashboard: React.FC = () => {
       icon: Users
     },
     {
-      name: 'Present Today',
-      value: '142',
-      change: '+2%',
+      name: 'Attendance Rate',
+      value: '91%',
+      change: '+3%',
       changeType: 'positive' as const,
-      icon: UserCheck
+      icon: Activity
     },
     {
       name: 'Leave Requests',
-      value: '8',
-      change: '+3',
-      changeType: 'negative' as const,
+      value: '12',
+      change: '+2',
+      changeType: 'positive' as const,
       icon: Calendar
     },
     {
-      name: 'Pending Approvals',
-      value: '5',
-      change: '-2',
+      name: 'Performance Issues',
+      value: '3',
+      change: '-1',
       changeType: 'positive' as const,
-      icon: Clock
+      icon: AlertTriangle
     }
   ];
 
@@ -44,41 +44,80 @@ const HRDashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Today's Attendance</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Employee Performance Alerts</h3>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">On Time</span>
-              <span className="text-sm font-medium text-green-600">128 employees</span>
+              <div>
+                <p className="text-sm font-medium text-gray-900">Task Delays</p>
+                <p className="text-xs text-gray-500">3 employees behind schedule</p>
+              </div>
+              <span className="text-sm font-medium text-red-600">High Priority</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Late</span>
-              <span className="text-sm font-medium text-yellow-600">14 employees</span>
+              <div>
+                <p className="text-sm font-medium text-gray-900">Meeting Absences</p>
+                <p className="text-xs text-gray-500">2 employees missed meetings</p>
+              </div>
+              <span className="text-sm font-medium text-yellow-600">Medium</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Absent</span>
-              <span className="text-sm font-medium text-red-600">14 employees</span>
+              <div>
+                <p className="text-sm font-medium text-gray-900">Low Productivity</p>
+                <p className="text-xs text-gray-500">1 employee needs attention</p>
+              </div>
+              <span className="text-sm font-medium text-orange-600">Low</span>
             </div>
           </div>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Leave Requests</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Pending HR Actions</h3>
           <div className="space-y-3">
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
               <div>
-                <p className="text-sm font-medium text-gray-900">John Doe</p>
-                <p className="text-xs text-gray-500">Sick Leave - 2 days</p>
+                <p className="text-sm font-medium text-gray-900">Leave Approvals</p>
+                <p className="text-xs text-gray-500">5 requests pending review</p>
               </div>
-              <button className="text-sm text-blue-600 hover:text-blue-700">Approve</button>
+              <button className="text-sm text-blue-600 hover:text-blue-700">Review</button>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
               <div>
-                <p className="text-sm font-medium text-gray-900">Jane Smith</p>
-                <p className="text-xs text-gray-500">Vacation - 5 days</p>
+                <p className="text-sm font-medium text-gray-900">Document Uploads</p>
+                <p className="text-xs text-gray-500">3 onboarding documents needed</p>
               </div>
-              <button className="text-sm text-blue-600 hover:text-blue-700">Approve</button>
+              <button className="text-sm text-blue-600 hover:text-blue-700">Upload</button>
+            </div>
+            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+              <div>
+                <p className="text-sm font-medium text-gray-900">Performance Reviews</p>
+                <p className="text-xs text-gray-500">2 quarterly reviews due</p>
+              </div>
+              <button className="text-sm text-blue-600 hover:text-blue-700">Schedule</button>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* HR Quick Actions */}
+      <div className="bg-white p-6 rounded-lg shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">HR Quick Actions</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <button className="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg text-left transition-colors">
+            <Calendar className="h-6 w-6 text-blue-600 mb-2" />
+            <div className="text-sm font-medium text-gray-900">Schedule Meeting</div>
+          </button>
+          <button className="p-4 bg-green-50 hover:bg-green-100 rounded-lg text-left transition-colors">
+            <FileText className="h-6 w-6 text-green-600 mb-2" />
+            <div className="text-sm font-medium text-gray-900">Upload Documents</div>
+          </button>
+          <button className="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg text-left transition-colors">
+            <TrendingUp className="h-6 w-6 text-purple-600 mb-2" />
+            <div className="text-sm font-medium text-gray-900">Performance Review</div>
+          </button>
+          <button className="p-4 bg-orange-50 hover:bg-orange-100 rounded-lg text-left transition-colors">
+            <AlertTriangle className="h-6 w-6 text-orange-600 mb-2" />
+            <div className="text-sm font-medium text-gray-900">Emergency Notice</div>
+          </button>
         </div>
       </div>
     </div>

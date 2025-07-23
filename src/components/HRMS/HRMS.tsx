@@ -262,4 +262,141 @@ const HRMS: React.FC = () => {
   );
 };
 
+// Performance Monitor Component
+const PerformanceMonitor: React.FC<{ employees: any[] }> = ({ employees }) => {
+  const performanceData = [
+    { employee: 'John Doe', department: 'Development', taskCompletion: 95, meetingAttendance: 98, punctuality: 92, overallScore: 95 },
+    { employee: 'Jane Smith', department: 'HR', taskCompletion: 88, meetingAttendance: 100, punctuality: 96, overallScore: 94 },
+    { employee: 'Mike Johnson', department: 'Sales', taskCompletion: 92, meetingAttendance: 85, punctuality: 88, overallScore: 88 }
+  ];
+
+  const getScoreColor = (score: number) => {
+    if (score >= 90) return 'text-green-600';
+    if (score >= 75) return 'text-yellow-600';
+    return 'text-red-600';
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="p-6 border-b">
+          <h3 className="text-lg font-semibold text-gray-900">Employee Performance Monitor</h3>
+          <p className="text-sm text-gray-600 mt-1">Track task completion, meeting participation, and overall performance</p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task Completion</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Meeting Attendance</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Punctuality</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Overall Score</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {performanceData.map((emp, index) => (
+                <tr key={index} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">{emp.employee}</div>
+                      <div className="text-sm text-gray-500">{emp.department}</div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`text-sm font-medium ${getScoreColor(emp.taskCompletion)}`}>{emp.taskCompletion}%</span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`text-sm font-medium ${getScoreColor(emp.meetingAttendance)}`}>{emp.meetingAttendance}%</span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`text-sm font-medium ${getScoreColor(emp.punctuality)}`}>{emp.punctuality}%</span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`text-sm font-bold ${getScoreColor(emp.overallScore)}`}>{emp.overallScore}%</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// HR Reports Component
+const HRReports: React.FC<{ employees: any[], leaveRequests: any[], attendanceData: any[] }> = ({ 
+  employees, leaveRequests, attendanceData 
+}) => {
+  const reports = [
+    { name: 'Monthly Attendance Report', description: 'Detailed attendance analysis for all employees', type: 'attendance' },
+    { name: 'Leave Management Report', description: 'Leave requests, approvals, and patterns', type: 'leave' },
+    { name: 'Performance Summary', description: 'Employee performance metrics and trends', type: 'performance' },
+    { name: 'Onboarding Report', description: 'New employee onboarding status and progress', type: 'onboarding' },
+    { name: 'Training & Development', description: 'Employee skill development and training records', type: 'training' }
+  ];
+
+  const getReportIcon = (type: string) => {
+    switch (type) {
+      case 'attendance': return <Clock className="h-6 w-6 text-blue-600" />;
+      case 'leave': return <Calendar className="h-6 w-6 text-green-600" />;
+      case 'performance': return <TrendingUp className="h-6 w-6 text-purple-600" />;
+      case 'onboarding': return <UserPlus className="h-6 w-6 text-orange-600" />;
+      case 'training': return <FileText className="h-6 w-6 text-red-600" />;
+      default: return <FileText className="h-6 w-6 text-gray-600" />;
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">HR Analytics & Reports</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {reports.map((report, index) => (
+            <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
+              <div className="flex items-center space-x-3 mb-3">
+                {getReportIcon(report.type)}
+                <h4 className="text-md font-medium text-gray-900">{report.name}</h4>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">{report.description}</p>
+              <button className="w-full bg-blue-50 text-blue-600 px-3 py-2 rounded-md hover:bg-blue-100 transition-colors flex items-center justify-center space-x-2">
+                <Download className="h-4 w-4" />
+                <span>Generate Report</span>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-blue-600">{employees.length}</div>
+            <div className="text-sm text-gray-600">Total Employees</div>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-green-600">{leaveRequests.filter(r => r.status === 'approved').length}</div>
+            <div className="text-sm text-gray-600">Approved Leaves</div>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-yellow-600">{leaveRequests.filter(r => r.status === 'pending').length}</div>
+            <div className="text-sm text-gray-600">Pending Requests</div>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-purple-600">91%</div>
+            <div className="text-sm text-gray-600">Avg Attendance</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 export default HRMS;

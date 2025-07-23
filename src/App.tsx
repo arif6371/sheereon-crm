@@ -67,6 +67,11 @@ function AppContent() {
             <UserApproval />
           </ProtectedRoute>
         } />
+        <Route path="/admin/users" element={
+          <ProtectedRoute allowedRoles={['Admin', 'HR']}>
+            <UserApproval />
+          </ProtectedRoute>
+        } />
         <Route path="/notices" element={<NoticeBoard />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/profile" element={<Profile />} />

@@ -13,7 +13,8 @@ import {
   Settings,
   FileText,
   Eye,
-  TrendingUp
+  TrendingUp,
+  Code
 } from 'lucide-react';
 import StatsCard from './StatsCard';
 import RecentActivity from './RecentActivity';
